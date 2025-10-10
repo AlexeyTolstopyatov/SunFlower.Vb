@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>SunFlower.Vb</RootNamespace>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Reference Include="SunFlower.Abstractions">
+        <HintPath>..\..\SunFlower\src\SunFlower.Abstractions\bin\Debug\net8.0\SunFlower.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>
