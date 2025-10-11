@@ -11,11 +11,21 @@
 # Edit this script for your desktop and bind it with
 # JetBrains project's Start-up configuration.
 # I've called this bind "Data"
-
+#
 ### ---USER CHANGES SCOPE STARTS---
+$framework = "D:\Locals\SunFlower\src\SunFlower\bin\Debug\net8.0\SunFlower.Abstractions.dll"
 $client_debug = "D:\Locals\SunFlower\src\SunFlower.Windows\bin\Debug\net8.0-windows"
 $target_debug = "D:\Locals\SunFlower.Vb\bin\Debug\net8.0\SunFlower.Vb.dll"
 ### ---USER CHANGES SCOPE ENDS---
 
+Write-Host "Importing to $client_debug\Plugins" -ForegroundColor blue
+if (Test-Path "$client_debug\Plugins") {
 
+} else {
+    New-Item -ItemType Directory "$client_debug\Plugins"
+}
 
+if (Test-Path $target_debug) {
+    Copy-Item -Path $framework -Destination "$client_debug\Plugins" -Force
+    Copy-Item -Path $target_debug -Destination "$client_debug\Plugins\" -Force
+}

@@ -11,7 +11,7 @@ Public Class VisualBasicClassicSeed
         Implements IFlowerSeed.Status
     
     Public Function Main(path As String) As Integer Implements IFlowerSeed.Main
-         
+        
         Return -1
     End Function
 End Class
