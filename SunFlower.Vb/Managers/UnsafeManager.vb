@@ -5,15 +5,21 @@ Namespace Managers
     Public Class UnsafeManager
         ''' Calls the Garbage collector and allocates memory
         ''' for the unmanaged bytes range.
-        Public Function Fill(Of TStruct As Structure) (reader As BinaryReader) As TStruct
-            Dim struct = New TStruct()
-            Dim rawBytes = reader.ReadBytes(Marshal.SizeOf(struct.GetType()))
-            Dim handle = GCHandle.Alloc(rawBytes, GCHandleType.Pinned)
-            
-            struct = Marshal.PtrToStructure(Of TStruct)(handle)
-            
+        Protected Function Fill(Of TStruct As Structure)(reader As BinaryReader) As TStruct
+            Dim bytes As Byte() = reader.ReadBytes(Marshal.SizeOf(GetType(TStruct)))
+            Dim handle As GCHandle = GCHandle.Alloc(bytes, GCHandleType.Pinned)
+            Dim result = Marshal.PtrToStructure(Of TStruct)(handle.AddrOfPinnedObject())
             handle.Free()
-            Return struct
+            Return result
+        End Function
+        Protected Function FillCString (reader As BinaryReader) As String
+            Dim str = New List(Of Char)
+            Dim c As Char = reader.ReadChar()
+            While c <> Chr(0)
+                str.Add(c)
+            End While
+            
+            Return New String(str.ToArray())
         End Function
     End Class
 End Namespace

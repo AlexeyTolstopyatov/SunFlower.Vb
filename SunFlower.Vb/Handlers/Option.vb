@@ -9,6 +9,16 @@ Namespace Handlers
     
     Public MustInherit Class [Option]
         Public Property Type As OptionIndex
+        Public Shared Function GetResult(o As [Option])
+            If o.Type = OptionIndex.Some
+                Dim result As Some = o
+                Return result
+            Else 
+                Dim result As None = o
+                Return result
+            End If
+        End Function
+        
     End Class
     
     Public Class Some 
@@ -17,7 +27,12 @@ Namespace Handlers
 
         Sub New(data As Object)
             Me.Data = data
+            Me.Type = OptionIndex.Some
         End Sub
+        Public Function Cast(Of T) ()
+            Dim obj As T = Data
+            Return obj
+        End Function
     End Class
     
     Public Class None
@@ -28,6 +43,7 @@ Namespace Handlers
         Public Sub New(reason as ServiceReturns, reasonString As String)
             Me.ReasonString = reasonString
             Me.Reason = reason
+            Me.Type = OptionIndex.None
         End Sub
     End Class
 End Namespace
