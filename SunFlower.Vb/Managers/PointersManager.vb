@@ -6,19 +6,29 @@ Namespace Managers
         Inherits UnsafeManager
         Private sections As List(Of PeSection)
         Private imageBase As Long
+        Private vbHeaderOffset As Long
         
-        Public Sub New(imageBase As Long, sections As List(Of PeSection))
+        Public Sub SetVbHeaderOffset(ptr As Long)
+            vbHeaderOffset = ptr
+        End Sub
+        Protected Sub New(imageBase As Long, sections As List(Of PeSection))
             ' There's no any right methods to define runtime
             ' I specially say "f_ck it" and going to hell with only once
             ' knowing data field from PE32/+ "Optional" header
             Me.imageBase = imageBase
             Me.sections = sections
         End Sub
-        
-        Protected Function WrongOffset(ptr As Long) As Long 
-            Dim weed = ptr - imageBase
+        ''' Next stupid idea: define the offsets instead of
+        ''' long pointers set in structures
+        Protected Function FindByVb5Offset(ptr As Long) As Long
+            Return vbHeaderOffset + FindOffset(ptr) ' blyat
+        End Function
+        ''' I've seen this code in nightmare once night, so
+        ''' it helps to find tCOMREGDATA, tCOMREGINFO arrays and ProjectInfo
+        Protected Function FindRVA(ptr As Long) As Long 
+            Dim weed = imageBase - ptr
             If weed < 0 Then 
-                weed = imageBase - ptr
+                weed = ptr - imageBase
             End If
             
             Return weed
@@ -30,7 +40,7 @@ Namespace Managers
 
         ''' <param name="rva"> Required RVA </param>
         ''' <returns> File offset from RVA of selected section </returns>
-        ''' <exception cref="SectionNotFoundException"> If RVA not belongs to any section </exception>
+        ''' <exception cref="InvalidDataException"> If RVA not belongs to any section </exception>
         Protected Function FindOffset(rva As Long) As Long
             Dim section = FindSection(rva)
             Return 0 + section.PointerToRawData + (rva - section.VirtualAddress)
@@ -38,7 +48,7 @@ Namespace Managers
 
         ''' <param name="rva"> Required relative address </param>
         ''' <returns> <see cref="PeSection"/> Which RVA belongs </returns>
-        ''' <exception cref="SectionNotFoundException"> If RVA not belongs to any section </exception>
+        ''' <exception cref="InvalidDataException"> If RVA not belongs to any section </exception>
         Private Function FindSection(rva As Long) As PeSection
             ' rva = {uint} 2019914798 
             ' rva = {long} 2019914798 

@@ -50,8 +50,8 @@ Namespace Services
             Dim data = New Vb5ComData() 
             Dim offset As Long
             Try
-                offset = WrongOffset(_header.ComRegisterDataPointer)
-                _reader.BaseStream.Position = WrongOffset(_header.ComRegisterDataPointer)
+                offset = FindRVA(_header.ComRegisterDataPointer)
+                _reader.BaseStream.Position = FindRVA(_header.ComRegisterDataPointer)
                 data = Fill(Of Vb5ComData)(_reader)
             Catch e As Exception
                 ' Get results of ALL structs

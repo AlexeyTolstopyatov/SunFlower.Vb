@@ -14,20 +14,9 @@ Namespace Services
         Const Vb5Version As UInt32 = &H1F4
         
         Private ReadOnly _reader As BinaryReader
-        Private _comDataOffset As Long
-        Private _projectInfoOffset As Long
         Private _runtimeHeader As Vb5Header
-        Private _designerInfoOffsets As List(Of Long) = New List(Of Long)
-        Private _comData As Vb5ComData
-        Private _projectInfo As Vb5ProjectInfo
-        Private ReadOnly _designerInfoList As List(Of Vb5DesignerInfo) = New List(Of Vb5DesignerInfo)()
-        Private ReadOnly _comInfoOffsets As List(Of Long) = New List(Of Long)
-        Private ReadOnly _comInfoList As List(Of Vb5ComInfo) = New List(Of Vb5ComInfo)
         Property CallingRuntimeRva As Long
         Public Property Vb5Header As [Option]
-        Public Property ComRegistrationData As [Option]
-        Public Property ComRegistrationInfo As [Option]
-        Public Property ComRegistrationInfoOffsets As [Option]
         Public Property RuntimeHeaderOffset as Long
 
         Public Sub New(reader As BinaryReader, parameters As Vb5ServiceParameters, sections As List(Of PeSection))
@@ -61,8 +50,8 @@ Namespace Services
                 )
             End If
             
-            _reader.BaseStream.Position = WrongOffset(pushAddress)
-            RuntimeHeaderOffset = WrongOffset(pushAddress) ' <-- Remember offset
+            _reader.BaseStream.Position = FindRVA(pushAddress)
+            RuntimeHeaderOffset = FindRVA(pushAddress) ' <-- Remember offset
             _runtimeHeader = Fill(Of Vb5Header)(_reader)
             
             ' #1 | Deep Diving into Visual Basic hell

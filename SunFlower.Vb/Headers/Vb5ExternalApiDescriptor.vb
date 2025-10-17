@@ -1,4 +1,11 @@
-﻿Namespace Headers
+﻿Imports System.Runtime.InteropServices
+
+Namespace Headers
+    <StructLayout(LayoutKind.Sequential)>
+    Public Structure ExternalApiDescriptor
+        Public EntryType As UInt32
+        Public EntryPointer As UInt32
+    End Structure
     ''' If dwType of external descriptor == 7
     ''' pointer to info locates this structure
     Public Class Vb5ImportByName
@@ -30,4 +37,5 @@
             Me.UnknownPointer = unknownPointer
         End Sub
     End Class
+    
 End Namespace

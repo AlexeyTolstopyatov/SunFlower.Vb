@@ -3,15 +3,25 @@
 Namespace Headers
     <StructLayout(LayoutKind.Sequential, Pack := 1)>
     Public Structure Vb5ObjectDescriptor
+        <MarshalAs(UnmanagedType.U4)>
         Public ObjectInfoPointer As UInt32
+        <MarshalAs(UnmanagedType.U4)>
         Public Reserved As UInt32
-        Public PublicBytesPointer As UInt32 '--> RESDESC_Table
-        Public StaticBytesPointer As UInt32 '--> another RESDESC_Table
+        <MarshalAs(UnmanagedType.U4)>
+        Public PublicBytesPointer As UInt32
+        <MarshalAs(UnmanagedType.U4)>'--> RESDESC_Table
+        Public StaticBytesPointer As UInt32
+        <MarshalAs(UnmanagedType.U4)>'--> another RESDESC_Table
         Public ObjectStringPointer As UInt32
+        <MarshalAs(UnmanagedType.U4)>
         Public MethodsCount As UInt32
-        Public MethodsPointer As UInt32 ' --> [lpMethodNamem, lpMethodName, lpMethodName ...]
+        <MarshalAs(UnmanagedType.U4)>
+        Public MethodsPointer As UInt32
+        <MarshalAs(UnmanagedType.U4)>' --> [lpMethodNamem, lpMethodName, lpMethodName ...]
         Public StaticVars As UInt32
+        <MarshalAs(UnmanagedType.U4)>
         Public ObjectFlag As UInt32
+        <MarshalAs(UnmanagedType.U4)>
         Public Null As UInt32
     End Structure
     

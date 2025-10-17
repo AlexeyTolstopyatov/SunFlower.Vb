@@ -22,10 +22,11 @@ Namespace Services
         ''' Some(List of DWORDs)
         ''' None(default)
         Public Property ExternalDescriptors As [Option]
-        ''' Some(List of MustInherit(IMPORT_DESCRIPTOR))
-        '''     IMPORT_DESCRIPTOR type = 6 --> GUID Import record
-        '''                       type = 7 --> Import by Name (IAT/ITL binding)
+        ''' Some(List of NAMEImport)
+        '''     IMPORT_DESCRIPTOR type = 7 --> Import by Name (IAT/ITL binding)
         Public Property ExternalProcedures As [Option]
+        ''' Some(List of GUIDImport) type = 6 --> GUID Import record
+        Public Property ExternalGUIDs As [Option]
         ''' Some(List of ObjectInfo)
         ''' None(default)
         Public Property ObjectInfo As [Option]
@@ -33,13 +34,15 @@ Namespace Services
         ''' 
         Public Property MethodNames As [Option]
         
-        Public Sub New(imageBase As Long, header As Vb5Header, reader As BinaryReader, sections As List(Of PeSection))
+        Public Sub New(imageBase As Long, header As Vb5Header, reader As BinaryReader, sections As List(Of PeSection), vbOffset As Long)
             MyBase.New(imageBase := imageBase,
                        sections := sections)
+            SetVbHeaderOffset(vbOffset)
             _header = header
             _reader = reader
             
             FillProjectInfo() ' <-- update models
+            FillExternalComponents()
         End Sub
         ''' ProjectInfo holds information about all external
         ''' components bound to module what not/requires (NCoded/PCoded)
@@ -53,10 +56,11 @@ Namespace Services
             '   lpCodeStarts sometimes equals 0xE9E9E9E9
             '   lpCodeEnds   sometimes equals 0x9E9E9E9E
             '   lpNativeCode 0 -> P-CODE |  !0 -> N-CODE
-            Dim offset = WrongOffset(_header.ProjectDataPointer)
-            _reader.BaseStream.Position = WrongOffset(_header.ProjectDataPointer)
+            Dim offset = FindOffset(FindRVA(_header.ProjectDataPointer))
+            _reader.BaseStream.Position = FindOffset(FindRVA(_header.ProjectDataPointer))
             Dim info = Fill(Of Vb5ProjectInfo)(_reader)
 
+            ' info.Version <> 500 = f. f => a || f !=> a
             If info.Version <> &H1F4 Then
                 ' redefine globals
                 ' dwVersion always holds "5.00" pseudo-string
@@ -70,33 +74,21 @@ Namespace Services
             ProjectInfoOffset = New Some(offset)
             
             ' -- 2nd level --
-            _reader.BaseStream.Position = WrongOffset(info.ObjectTablePointer)
+            _reader.BaseStream.Position = FindOffset(FindRVA(info.ObjectTablePointer))
             Dim objTable = Fill(Of Vb5ObjectTable)(_reader)
             Dim objPointers = New List(Of Vb5ObjectDescriptor)()
             Dim counter = 1
-            
-            _reader.BaseStream.Position = WrongOffset(objTable.ObjectsArrayPointer)
-            While counter < objTable.TotalObjectsCount
-                Dim descriptor = Fill(Of Vb5ObjectDescriptor)(_reader)
-                objPointers.Add(descriptor)
-                counter += 1
-            End While
-            
-            Dim methods = New Dictionary(Of String, List(Of String))
-
-            For Each i In objPointers
-                _reader.BaseStream.Position = WrongOffset(i.ObjectStringPointer)
-                Dim modstr = FillCString(_reader)
-                Dim methodsList = New List(Of String)
-                
-                ' _reader.BaseStream.Position = LongPtrToOffset(i.MethodsPointer)
-            Next
-            
-            
+            Try
+                _reader.BaseStream.Position = FindOffset(FindRVA(objTable.ObjectsArrayPointer))
+                ' iterate data
+            Catch
+                ' ignore next details
+            End Try
+'           
             ObjectTable = New Some(objTable)
         End Sub
         ''' 
-        Public Sub FillExternalComponents()
+        Private Sub FillExternalComponents()
             ' #2.1 | ExternalComponents
             ' Defines in ProjectInfo table with 2 fields:
             '   dwExternalCtlsCount
@@ -106,7 +98,63 @@ Namespace Services
             '
             ' External API descriptors table is an array of RVA
             ' pointers to structs embedded in executable image
+            Dim prj As Some = ProjectInfo
+            Dim info As Vb5ProjectInfo = prj.Data
             
+            If info.ExternalTableCount = 0 Then
+                ExternalGUIDs = New None(ServiceReturns.BadData, "no GUIDs")
+                ExternalProcedures = New None(ServiceReturns.BadData, "no imports")
+                ExternalDescriptors = New None(ServiceReturns.BadData, "no external components")
+                Return
+            End If
+            
+            _reader.BaseStream.Position = FindRVA(info.ExternalTablePointer) ' RVA points to non-allocated space
+            Dim ctls = New List(Of ExternalApiDescriptor)
+            
+            For i As UInteger = 1 To info.ExternalTableCount 
+                Dim d = New ExternalApiDescriptor()
+                
+                d.EntryType = _reader.ReadUInt32()
+                d.EntryPointer = _reader.ReadUInt32()
+                
+                ctls.Add(d)
+            Next
+            Dim imp = New List(Of Vb5ImportByName)()
+            Dim guid = New List(Of Vb5ImportByGuid)()
+            
+            For j As UInteger = 1 To info.ExternalTableCount
+                _reader.BaseStream.Position = FindRVA(ctls(j).EntryPointer)
+                If ctls(j).EntryType = 7 Then
+                    Dim lpModuleName = _reader.ReadUInt32()
+                    Dim lpProcedureName = _reader.ReadUInt32()
+                    Dim lpBase = _reader.ReadUInt32()
+                    _reader.ReadUInt64() ' dwNULL + dwNULL skip
+                    Try 
+                        _reader.BaseStream.Position = FindOffset(FindRVA(lpModuleName))
+                        Dim name = FillCString(_reader)
+                        _reader.BaseStream.Position = FindOffset(FindRVA(lpProcedureName))
+                        Dim procName = FillCString(_reader)
+                        imp.Add(New Vb5ImportByName(lpModuleName, name, lpProcedureName, procName, lpBase))
+                    Catch ' some pointers may locate undefined or "non-allocated" memory scope
+                        imp.Add(New Vb5ImportByName(lpModuleName, "", lpProcedureName, "", lpBase))
+                    End Try
+                Else If ctls(j).EntryType = 6 Then
+                    Dim lpGuid = _reader.ReadUInt32()
+                    Dim unknown = _reader.ReadUInt32()
+                    Try
+                        _reader.BaseStream.Position = FindOffset(FindRVA(lpGuid))
+                        Dim g = _reader.ReadUInt64()
+                        guid.Add(New Vb5ImportByGuid(lpGuid, g, unknown))
+                    Catch
+                        guid.Add(New Vb5ImportByGuid(lpGuid, 0, unknown))
+                    End Try
+                Else
+                    Continue For
+                End If
+            Next
+            ExternalDescriptors = New Some(ctls)
+            ExternalProcedures = New Some(imp)
+            ExternalGUIDs = New Some(guid)
         End Sub
     End Class
 End Namespace
