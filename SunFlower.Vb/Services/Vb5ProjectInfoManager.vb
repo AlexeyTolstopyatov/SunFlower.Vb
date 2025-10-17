@@ -56,8 +56,8 @@ Namespace Services
             '   lpCodeStarts sometimes equals 0xE9E9E9E9
             '   lpCodeEnds   sometimes equals 0x9E9E9E9E
             '   lpNativeCode 0 -> P-CODE |  !0 -> N-CODE
-            Dim offset = FindOffset(FindRVA(_header.ProjectDataPointer))
-            _reader.BaseStream.Position = FindOffset(FindRVA(_header.ProjectDataPointer))
+            Dim offset = FindRVA(_header.ProjectDataPointer)
+            _reader.BaseStream.Position = FindRVA(_header.ProjectDataPointer)
             Dim info = Fill(Of Vb5ProjectInfo)(_reader)
 
             ' info.Version <> 500 = f. f => a || f !=> a
@@ -74,13 +74,14 @@ Namespace Services
             ProjectInfoOffset = New Some(offset)
             
             ' -- 2nd level --
-            _reader.BaseStream.Position = FindOffset(FindRVA(info.ObjectTablePointer))
+            _reader.BaseStream.Position = FindRVA(info.ObjectTablePointer)
             Dim objTable = Fill(Of Vb5ObjectTable)(_reader)
             Dim objPointers = New List(Of Vb5ObjectDescriptor)()
             Dim counter = 1
             Try
-                _reader.BaseStream.Position = FindOffset(FindRVA(objTable.ObjectsArrayPointer))
+                _reader.BaseStream.Position = FindRVA(objTable.ObjectsArrayPointer)
                 ' iterate data
+                ' MethodNames array extract
             Catch
                 ' ignore next details
             End Try
@@ -110,29 +111,35 @@ Namespace Services
             
             _reader.BaseStream.Position = FindRVA(info.ExternalTablePointer) ' RVA points to non-allocated space
             Dim ctls = New List(Of ExternalApiDescriptor)
-            
-            For i As UInteger = 1 To info.ExternalTableCount 
-                Dim d = New ExternalApiDescriptor()
-                
-                d.EntryType = _reader.ReadUInt32()
-                d.EntryPointer = _reader.ReadUInt32()
-                
-                ctls.Add(d)
-            Next
+            Try
+                For i As UInteger = 1 To info.ExternalTableCount 
+                    Dim d = New ExternalApiDescriptor()
+                    
+                    d.EntryType = _reader.ReadUInt32()
+                    d.EntryPointer = _reader.ReadUInt32()
+                    
+                    ctls.Add(d)
+                Next
+            Catch e As Exception
+                ExternalDescriptors = New None(ServiceReturns.BadOperation, e.Message)
+                ExternalProcedures = New None(ServiceReturns.BadOperation, "unreachable memory space")
+                ExternalGUIDs = New None(ServiceReturns.BadOperation, "unreachable memory space")
+                Return
+            End Try
             Dim imp = New List(Of Vb5ImportByName)()
             Dim guid = New List(Of Vb5ImportByGuid)()
             
             For j As UInteger = 1 To info.ExternalTableCount
-                _reader.BaseStream.Position = FindRVA(ctls(j).EntryPointer)
+                _reader.BaseStream.Position = ctls(j).EntryPointer
                 If ctls(j).EntryType = 7 Then
                     Dim lpModuleName = _reader.ReadUInt32()
                     Dim lpProcedureName = _reader.ReadUInt32()
                     Dim lpBase = _reader.ReadUInt32()
                     _reader.ReadUInt64() ' dwNULL + dwNULL skip
                     Try 
-                        _reader.BaseStream.Position = FindOffset(FindRVA(lpModuleName))
+                        _reader.BaseStream.Position = lpModuleName
                         Dim name = FillCString(_reader)
-                        _reader.BaseStream.Position = FindOffset(FindRVA(lpProcedureName))
+                        _reader.BaseStream.Position = lpProcedureName
                         Dim procName = FillCString(_reader)
                         imp.Add(New Vb5ImportByName(lpModuleName, name, lpProcedureName, procName, lpBase))
                     Catch ' some pointers may locate undefined or "non-allocated" memory scope
@@ -142,7 +149,7 @@ Namespace Services
                     Dim lpGuid = _reader.ReadUInt32()
                     Dim unknown = _reader.ReadUInt32()
                     Try
-                        _reader.BaseStream.Position = FindOffset(FindRVA(lpGuid))
+                        _reader.BaseStream.Position = FindRVA(lpGuid)
                         Dim g = _reader.ReadUInt64()
                         guid.Add(New Vb5ImportByGuid(lpGuid, g, unknown))
                     Catch

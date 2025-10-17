@@ -1,15 +1,17 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CLocals_005CSunFlower_005Csrc_005CSunFlower_002EAbstractions_005Cbin_005CDebug_005Cnet8_002E0_005CSunFlower_002EAbstractions_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=63eb037c_002D951a_002D4bc4_002Da82b_002D1f0c3b857779/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ModuleStructTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1d30a6ee_002D7766_002D48e3_002D98bf_002D58205452f4f9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ProcessStructTest #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ProcessStructTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a73323f3_002D8c7f_002D4db8_002D85a3_002D49b8b0e6d1a5/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ModuleStructTest #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=5ee77a2b_002D8b65_002D48bc_002Db713_002D7011d7679d60/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ProcessStructTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ProcessStructTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	
+	
 	
 	
 	

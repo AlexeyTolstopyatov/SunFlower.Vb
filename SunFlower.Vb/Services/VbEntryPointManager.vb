@@ -23,7 +23,7 @@ Namespace Services
             MyBase.New(parameters.ImageBase, sections)
             
             _reader = reader
-            _reader.BaseStream.Position = FindOffset(parameters.EntryPoint)
+            _reader.BaseStream.Position = parameters.EntryPoint ' <-- now I'm in memory already
             
             Vb5Header = FillEntryPointPattern()
         End Sub
@@ -35,10 +35,10 @@ Namespace Services
             Dim push, [call] As Byte
             Dim pushAddress, [callAddress] As UInt32 ' <-- Import table analysis required
             
-            push = _reader.ReadByte() ' EndOfStreamPosition???
+            push = _reader.ReadByte()
             pushAddress = _reader.ReadUInt32()
-            [call] = _reader.ReadByte()          ' Reserved VB.NET keywords ignoring
-            [callAddress] = _reader.ReadUInt32() ' same vibe bro
+            [call] = _reader.ReadByte()
+            [callAddress] = _reader.ReadUInt32()
             
             ' <program>::entry()
             ' push 0x00ad345f ;WVA of Vb5Header (~wrong~ RVA here)
@@ -51,7 +51,7 @@ Namespace Services
             End If
             
             _reader.BaseStream.Position = FindRVA(pushAddress)
-            RuntimeHeaderOffset = FindRVA(pushAddress) ' <-- Remember offset
+            RuntimeHeaderOffset = pushAddress ' <-- Remember offset
             _runtimeHeader = Fill(Of Vb5Header)(_reader)
             
             ' #1 | Deep Diving into Visual Basic hell
