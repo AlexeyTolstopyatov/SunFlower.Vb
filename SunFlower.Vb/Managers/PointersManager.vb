@@ -4,9 +4,9 @@ Imports SunFlower.Vb.Headers
 Namespace Managers
     Public Class PointersManager 
         Inherits UnsafeManager
-        Private sections As List(Of PeSection)
-        Private imageBase As Long
-        Private vbHeaderOffset As Long
+        Protected sections As List(Of PeSection)
+        Protected imageBase As Long
+        Protected vbHeaderOffset As Long
         
         Public Sub SetVbHeaderOffset(ptr As Long)
             vbHeaderOffset = ptr

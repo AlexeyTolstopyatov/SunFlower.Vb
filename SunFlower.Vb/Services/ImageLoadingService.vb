@@ -46,7 +46,6 @@ Public Class ImageLoadingService
     End Function
 
     Private Shared Function GetProcessByName(processName As String) As Process
-        ' processName - имя БЕЗ .exe (например "myapp" вместо "myapp.exe")
         Dim processes = Process.GetProcessesByName(processName)
         Return If(processes.Length > 0, processes(0), Nothing)
     End Function

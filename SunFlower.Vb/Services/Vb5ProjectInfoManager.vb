@@ -42,7 +42,9 @@ Namespace Services
             _reader = reader
             
             FillProjectInfo() ' <-- update models
-            FillExternalComponents()
+            ' FillExternalComponents()
+            Dim e = ExtractImports()
+            
         End Sub
         ''' ProjectInfo holds information about all external
         ''' components bound to module what not/requires (NCoded/PCoded)
@@ -56,34 +58,61 @@ Namespace Services
             '   lpCodeStarts sometimes equals 0xE9E9E9E9
             '   lpCodeEnds   sometimes equals 0x9E9E9E9E
             '   lpNativeCode 0 -> P-CODE |  !0 -> N-CODE
-            Dim offset = FindRVA(_header.ProjectDataPointer)
-            _reader.BaseStream.Position = FindRVA(_header.ProjectDataPointer)
+            Dim offset = _header.ProjectDataPointer - imageBase
+            _reader.BaseStream.Position = offset
             Dim info = Fill(Of Vb5ProjectInfo)(_reader)
 
             ' info.Version <> 500 = f. f => a || f !=> a
-            If info.Version <> &H1F4 Then
-                ' redefine globals
-                ' dwVersion always holds "5.00" pseudo-string
-                ProjectInfo = new None(ServiceReturns.BadData, "bad version value")
-                ProjectInfoOffset = New None(ServiceReturns.BadData, "bad version value")
-                ObjectInfo = New None(ServiceReturns.BadOperation, "project info unloaded")
-                ObjectTable = New None(ServiceReturns.BadOperation, "project info unloaded")
-            End If
+'            If info.Version <> &H1F4 Then
+'                ' redefine globals
+'                ' dwVersion always holds "5.00" pseudo-string
+'                ProjectInfo = new None(ServiceReturns.BadData, "bad version value")
+'                ProjectInfoOffset = New None(ServiceReturns.BadData, "bad version value")
+'                ObjectInfo = New None(ServiceReturns.BadOperation, "project info unloaded")
+'                ObjectTable = New None(ServiceReturns.BadOperation, "project info unloaded")
+'            End If
             ' -- 1st level of VB Project --
+            
             ProjectInfo = New Some(info)
             ProjectInfoOffset = New Some(offset)
             
             ' -- 2nd level --
-            _reader.BaseStream.Position = FindRVA(info.ObjectTablePointer)
+            _reader.BaseStream.Position = info.ObjectTablePointer - imageBase
             Dim objTable = Fill(Of Vb5ObjectTable)(_reader)
             Dim objPointers = New List(Of Vb5ObjectDescriptor)()
-            Dim counter = 1
+            Dim count = objTable.TotalObjectsCount
+            
+            ' $descriptors = 31
+            If count > 255 Then
+                count = 255
+            End If
+            
             Try
                 _reader.BaseStream.Position = FindRVA(objTable.ObjectsArrayPointer)
                 ' iterate data
                 ' MethodNames array extract
+                For i = 1 To count
+                    objPointers.Add(Fill(Of Vb5ObjectDescriptor)(_reader))
+                Next
+                
+                For Each i In objPointers
+                    ' iterate object descriptors
+                    ' Find Object string
+                    _reader.BaseStream.Position = i.ObjectStringPointer - imageBase
+                    Dim str = FillCString(_reader)
+                    
+                    str.Concat("\0")
+                    'Dim mc = i.MethodsCount
+                    'If mc > 500 Then mc = 256
+                    
+                    'For j = 1 To mc
+                        
+                    'Next
+                Next
             Catch
                 ' ignore next details
+                
+                Return
             End Try
 '           
             ObjectTable = New Some(objTable)
@@ -109,7 +138,7 @@ Namespace Services
                 Return
             End If
             
-            _reader.BaseStream.Position = FindRVA(info.ExternalTablePointer) ' RVA points to non-allocated space
+            _reader.BaseStream.Position = FindRVA(info.ExternalTablePointer)' RVA points to non-allocated space
             Dim ctls = New List(Of ExternalApiDescriptor)
             Try
                 For i As UInteger = 1 To info.ExternalTableCount 
@@ -129,7 +158,12 @@ Namespace Services
             Dim imp = New List(Of Vb5ImportByName)()
             Dim guid = New List(Of Vb5ImportByGuid)()
             
-            For j As UInteger = 1 To info.ExternalTableCount
+            Dim count = info.ExternalTableCount
+            If count > 256 Then
+                count = 256
+            End If
+            
+            For j As UInteger = 1 To count
                 _reader.BaseStream.Position = ctls(j).EntryPointer
                 If ctls(j).EntryType = 7 Then
                     Dim lpModuleName = _reader.ReadUInt32()
@@ -163,5 +197,64 @@ Namespace Services
             ExternalProcedures = New Some(imp)
             ExternalGUIDs = New Some(guid)
         End Sub
+        
+        Private Function ExtractImports() As List(Of String)
+            Dim prj As Some = ProjectInfo
+            Dim info As Vb5ProjectInfo = prj.Data
+
+            Dim importsList As New List(Of String)()
+            Dim externalDescriptors = New List(Of ExternalApiDescriptor)()
+            If info.ExternalTableCount = 0 Then Return importsList
+            If info.ExternalTablePointer = 0 Then Return importsList
+            
+            Dim externTableOffset = FindRVA(info.ExternalTablePointer)
+            If externTableOffset < 0 Then Return importsList
+            
+            Dim maxImports = Math.Min(info.ExternalTableCount, 256)
+            
+            _reader.BaseStream.Position = externTableOffset
+            For i = 1 To maxImports
+                externalDescriptors.Add(Fill(Of ExternalApiDescriptor)(_reader))
+            Next    
+            
+            For Each item In externalDescriptors
+                If item.EntryType = 7 Then
+                    Dim importOffset = FindRVA(item.EntryPointer)
+                    _reader.BaseStream.Position = importOffset
+                    If importOffset >= 0 Then
+                        '' !!!!
+                        Dim lpszLibraryName = _reader.ReadUInt32()
+                        Dim lpszImportFunction = _reader.ReadUInt32()
+                        
+                        _reader.BaseStream.Position = FindRVA(lpszImportFunction)
+                        Dim functionName = FillCString(_reader)
+                        
+                        _reader.BaseStream.Position = FindRVA(lpszLibraryName)
+                        Dim libraryName = FillCString(_reader)
+                        
+                        If Not String.IsNullOrEmpty(libraryName) AndAlso Not String.IsNullOrEmpty(functionName) Then
+                            importsList.Add($"{libraryName}::{functionName}")
+                        End If
+                    End If
+                    
+                ElseIf item.EntryType = 6 Then
+                    Dim importOffset = FindRVA(item.EntryPointer)
+                    _reader.BaseStream.Position = importOffset
+                    
+                    If importOffset >= 0 Then
+                        Dim lpUuid = _reader.ReadUInt32() ' importOffset
+                        Dim uuidOffset = FindRVA(lpUuid)
+                        
+                        If uuidOffset >= 0 Then
+                            _reader.BaseStream.Position = uuidOffset
+                            Dim guid = _reader.ReadUInt64()
+                            importsList.Add($"_::{guid}")
+                        End If
+                    End If
+                End If
+            Next
+            
+            Return importsList
+        End Function
     End Class
 End Namespace

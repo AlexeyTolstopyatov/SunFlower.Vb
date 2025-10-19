@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.Runtime.InteropServices
+Imports System.Text
 
 Namespace Managers
     Public Class UnsafeManager
@@ -13,13 +14,14 @@ Namespace Managers
             Return result
         End Function
         Protected Function FillCString (reader As BinaryReader) As String
-            Dim str = New List(Of Char)
-            Dim c As Char = reader.ReadChar()
-            While c <> Chr(0)
-                str.Add(c)
+            Dim i As Char
+            Dim strList = New List(Of Char)
+            
+            While (CByte(i = reader.ReadChar())) <> 0
+                strList.Add(i)
             End While
             
-            Return New String(str.ToArray())
+            Return New String(strList.ToArray())
         End Function
     End Class
 End Namespace

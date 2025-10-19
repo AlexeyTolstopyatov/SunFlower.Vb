@@ -43,7 +43,8 @@ Namespace SunFlower.Test
         ''' to allocated space.
         <Test>
         Public Sub ProcessStructTest()
-            Dim path = "D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBGUARD\vb6\VBGUARD.exe"
+            ' Dim path = "D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBGUARD\vb6\VBGUARD.exe"
+            Dim path = "C:\Program Files (x86)\Semi VB Decompiler\SemiVBDecompiler.EXE"
             Dim loader = New ImageLoadingService()
             Dim common = New CommonDumpingService(path)
             Dim vbParamsOption As Some = common.Dump()
@@ -58,17 +59,11 @@ Namespace SunFlower.Test
             ' specially without silent mode.
             Using fs = New MemoryStream(loader.ProcessBytes, writable := False)
                 Using reader = New BinaryReader(fs)
-                    ' now I know: imageBase set in PE header from CommonDumping service.
-                    ' executable image copies to private memory without PE32/+ header data and
-                    ' addresses of structures are VA-typed not RVA.
-                    ' _::entry():
-                    '   push 0004000h
-                    '   call _!@100
                     Dim entryPointManager = New VbEntryPointManager(reader, vbParam, vbParam.Sections)
                     Dim headerResult As Some = entryPointManager.Vb5Header
                     Dim header = headerResult.Cast(Of Vb5Header)()
                     ' imageBase -> BaseAddress
-                    Dim projectInfo = New Vb5ProjectInfoManager(loader.BaseAddress.ToInt64(), header, reader, vbParam.Sections, entryPointManager.RuntimeHeaderOffset)
+                    Dim projectInfo = New Vb5ProjectInfoManager(vbParam.ImageBase, header, reader, vbParam.Sections, entryPointManager.RuntimeHeaderOffset)
                     
                     Dim prj As Some = projectInfo.ProjectInfo
                     Dim objT As Some = projectInfo.ObjectTable

@@ -15,8 +15,8 @@ Namespace Headers
         
         <MarshalAs(UnmanagedType.ByValArray, SizeConst := 6)>
         Public PrimitivePath As Byte()
-        <MarshalAs(UnmanagedType.ByValArray, SizeConst := 530)>
-        Public ProjectPath As Byte()
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst := 261)>
+        Public ProjectPath As UInt16()
         
         Public ExternalTablePointer As UInteger
         Public ExternalTableCount As UInteger
