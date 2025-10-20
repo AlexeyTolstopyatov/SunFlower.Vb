@@ -43,8 +43,8 @@ Namespace SunFlower.Test
         ''' to allocated space.
         <Test>
         Public Sub ProcessStructTest()
-            ' Dim path = "D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBGUARD\vb6\VBGUARD.exe"
-            Dim path = "C:\Program Files (x86)\Semi VB Decompiler\SemiVBDecompiler.EXE"
+            Dim path = "D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIS3.67e\VBDIS3.exe"
+            'Dim path = "C:\Program Files (x86)\Semi VB Decompiler\SemiVBDecompiler.EXE"
             Dim loader = New ImageLoadingService()
             Dim common = New CommonDumpingService(path)
             Dim vbParamsOption As Some = common.Dump()
@@ -69,7 +69,6 @@ Namespace SunFlower.Test
                     Dim objT As Some = projectInfo.ObjectTable
                     
                     Dim p = prj.Cast(Of Vb5ProjectInfo)()
-
                 End Using
             End Using
             

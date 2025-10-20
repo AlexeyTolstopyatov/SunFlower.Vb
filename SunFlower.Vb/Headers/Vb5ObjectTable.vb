@@ -9,7 +9,8 @@ Namespace Headers
         Public Reserved As UInt32
         Public Null As UInt32
         Public ProjectObjectPointer As UInt32
-        Public UuidObject As UInt64
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst := 16)>
+        Public UuidObject As Byte()
         Public CompileState As UInt16 ' I suppose it helps to call End-Runtime messages
         Public TotalObjectsCount As UInt16 ' <-- this is a count of API descriptors
         Public CompiledObjects As UInt16   ' <-- not this.
