@@ -1,5 +1,4 @@
 ﻿Imports System.IO
-Imports System.Runtime.InteropServices
 Imports SunFlower.Vb.Handlers
 Imports SunFlower.Vb.Headers
 Imports SunFlower.Vb.Managers
@@ -8,11 +7,9 @@ Imports SunFlower.Vb.Managers
 ''' and resolve next following structures of VB virtual machine
 Namespace Services
     Public Class VbEntryPointManager
-        Inherits PointersManager
+        Inherits MemoryManager
         Const Ia32PushOpcode As Byte = &H68
         Const Ia32CallOpcode As Byte = &H48
-        Const Vb5Version As UInt32 = &H1F4
-        
         Private ReadOnly _reader As BinaryReader
         Private _runtimeHeader As Vb5Header
         Property CallingRuntimeRva As Long
@@ -23,7 +20,7 @@ Namespace Services
             MyBase.New(parameters.ImageBase, sections)
             
             _reader = reader
-            _reader.BaseStream.Position = parameters.EntryPoint ' <-- now I'm in memory already
+            _reader.BaseStream.Position = VaToFileOffset(parameters.EntryPoint + imageBase)
             
             Vb5Header = FillEntryPointPattern()
         End Sub
@@ -50,7 +47,7 @@ Namespace Services
                 )
             End If
             
-            _reader.BaseStream.Position = FindRVA(pushAddress)
+            _reader.BaseStream.Position = VaToFileOffset(pushAddress) ' <-- exactly VA
             RuntimeHeaderOffset = pushAddress ' <-- Remember offset
             _runtimeHeader = Fill(Of Vb5Header)(_reader)
             

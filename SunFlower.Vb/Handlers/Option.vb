@@ -29,7 +29,7 @@ Namespace Handlers
             Me.Data = data
             Me.Type = OptionIndex.Some
         End Sub
-        Public Function Cast(Of T) ()
+        Public Function Cast(Of T) () As T
             Dim obj As T = Data
             Return obj
         End Function

@@ -67,7 +67,7 @@ Namespace Services
                     Dim pe32 = Fill(Of PeOptionalHeader)(reader)
                     Dim sections = New List(Of PeSection)
 
-                    For i = 0 to pe.NumberOfSections Step 1
+                    For i = 1 to pe.NumberOfSections Step 1
                         sections.Add(Fill(Of PeSection)(reader))
                     Next
                     

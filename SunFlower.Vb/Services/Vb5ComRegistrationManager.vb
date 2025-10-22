@@ -5,7 +5,7 @@ Imports SunFlower.Vb.Managers
 
 Namespace Services
     Public Class Vb5ComRegistrationManager
-        Inherits PointersManager
+        Inherits MemoryManager
 
         Private ReadOnly _header As Vb5Header
         Private ReadOnly _reader As BinaryReader
@@ -50,8 +50,8 @@ Namespace Services
             Dim data = New Vb5ComData() 
             Dim offset As Long
             Try
-                offset = FindRVA(_header.ComRegisterDataPointer)
-                _reader.BaseStream.Position = FindRVA(_header.ComRegisterDataPointer)
+                offset = VaToFileOffset(_header.ComRegisterDataPointer)
+                _reader.BaseStream.Position = VaToFileOffset(_header.ComRegisterDataPointer)
                 data = Fill(Of Vb5ComData)(_reader)
             Catch e As Exception
                 ' Get results of ALL structs
