@@ -10,6 +10,7 @@ Namespace Services
         Public Property TypeInfo As Vb5ObjectTypeInfo
         Public Property ObjectName As String
         Public Property MethodNames As List(Of String)
+        Public Property PrivateMethodNames As List(Of String)
         Public Property Methods As List(Of Vb5MethodInfo)
         Public Property PublicVariables As List(Of Vb5ResdescInfo)
         Public Property StaticVariables As List(Of Vb5ResdescInfo)
@@ -99,7 +100,11 @@ Namespace Services
             If details.ObjectInfo.MethodCount > 0 AndAlso IsValidVa(details.ObjectInfo.MethodsPointer) Then
                 details.Methods = ReadMethods(details.ObjectInfo.MethodsPointer, details.ObjectInfo.MethodCount)
             End If
-
+            
+            If details.ObjectInfo.MethodCount > 0 AndAlso IsValidVa(details.ObjectInfo.MethodsPointer) ' <-- MethodCountUsed instead
+                details.PrivateMethodNames = ReadMethodNames(details.ObjectInfo.MethodsPointer, details.ObjectInfo.MethodCount)
+            End If
+            
             Return details
         End Function
 
@@ -112,12 +117,12 @@ Namespace Services
             End Try
         End Function
 
-        Private Function ReadMethodNames(methodNamesRva As UInteger, m As UInteger) As List(Of String)
+        Private Function ReadMethodNames(methodNamesVa As UInteger, m As UInteger) As List(Of String)
             Dim names = New List(Of String)()
             Dim methodPointers = New List(Of UInteger)()
             m = Math.Min(m, 255)
             Try
-                _reader.BaseStream.Seek(VaToFileOffset(methodNamesRva), SeekOrigin.Begin)
+                _reader.BaseStream.Seek(VaToFileOffset(methodNamesVa), SeekOrigin.Begin)
                 
                 For i As UInteger = 1 To m
                     Dim namePtr = _reader.ReadUInt32()
@@ -139,11 +144,11 @@ Namespace Services
             Return names
         End Function
 
-        Private Function ReadMethods(methodsRva As UInteger, m As UInteger) As List(Of Vb5MethodInfo)
+        Private Function ReadMethods(methodsVa As UInteger, m As UInteger) As List(Of Vb5MethodInfo)
             Dim methods = New List(Of Vb5MethodInfo)()
 
             Try
-                _reader.BaseStream.Seek(VaToFileOffset(methodsRva), SeekOrigin.Begin)
+                _reader.BaseStream.Seek(VaToFileOffset(methodsVa), SeekOrigin.Begin)
 
                 For i As UInteger = 0 To m - 1
                     Dim method = Fill (Of Vb5Method)(_reader)
@@ -184,8 +189,8 @@ Namespace Services
 
         Private Function AnalyzeObjectType(flags As UInteger) As Vb5ObjectTypeInfo
             Dim typeInfo As New Vb5ObjectTypeInfo() With {
-                    .Flags = flags
-                    }
+                .Flags = flags
+            }
 
             Dim hasPublicInterface As Boolean = (flags And &H20000) <> 0
             Dim hasPublicEvents As Boolean = (flags And &H40000) <> 0
