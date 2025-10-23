@@ -1,39 +1,40 @@
 ﻿Imports System.Runtime.InteropServices
 
 Namespace Headers
-    <StructLayout(LayoutKind.Sequential, Pack := 1)>
+    <StructLayout(LayoutKind.Sequential, Pack:=1)>
     Public Structure Vb5ComData
-        ''' Offset from the COM registration data ENDS
-        Public RegInfoOffset As UInteger
-        Public ProjectNameOffset As UInteger
-        Public HelpDirectoryOffset As UInteger
-        Public ProjectDescriptionOffset As UInteger
-        Public UuidProjectClsId As ULong
-        Public TypeLibraryLanguageId As UInteger
-        Public Unknown As UInteger
-        Public TypeLibraryMajor As UShort
-        Public TypeLibraryMinor As UShort
+        Public RegInfoOffset As UInteger      ' bRegInfo
+        Public ProjectNameOffset As UInteger  ' bSZProjectName
+        Public HelpDirectoryOffset As UInteger ' bSZHelpDirectory
+        Public ProjectDescriptionOffset As UInteger ' bSZProjectDescription
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=16)>
+        Public UuidProjectClsId As Byte()     ' uuidProjectClsId
+        Public TlbLcid As UInteger            ' dwTlbLcid
+        Public Unknown As UShort              ' wUnknown
+        Public TlbVerMajor As UShort          ' wTlbVerMajor
+        Public TlbVerMinor As UShort          ' wTlbVerMinor
     End Structure
+
     
-    <StructLayout(LayoutKind.Sequential, Pack := 1)>
+    <StructLayout(LayoutKind.Sequential, Pack:=1)>
     Public Structure Vb5ComInfo
-        ''' If not zero -> another COM information structure goes next
-        Public NextObjectOffset As UInteger
-        Public ObjectNameOffset As UInteger
-        Public ObjectDescriptionOffset As UInteger
-        Public InstancingMode As UInteger
-        Public ObjectId As UInteger
-        Public UuidObject As ULong
-        Public IsInterface As UInteger
-        Public UuidObjectInterfaceOffset As UInteger
-        Public UuidEventsInterfaceOffset As UInteger
-        Public HasEvents As UInteger
-        Public MiscStatus As UInteger
-        Public ClassType As Byte
-        Public ObjectType As Byte
-        Public ToolBoxBitmap32 As UShort
-        Public DefaultIcon As UShort
-        Public IsDesigner As UShort
-        Public DesignerDataOffset As UInteger
+        Public NextObjectOffset As UInteger   ' bNextObject
+        Public ObjectNameOffset As UInteger   ' bObjectName
+        Public ObjectDescriptionOffset As UInteger ' bObjectDescription
+        Public InstancingMode As UInteger     ' dwInstancing
+        Public ObjectId As UInteger           ' dwObjectId
+        <MarshalAs(UnmanagedType.ByValArray, SizeConst:=16)>
+        Public UuidObject As Byte()           ' uuidObject
+        Public IsInterface As UInteger        ' fIsInterface
+        Public UuidObjectInterfaceOffset As UInteger ' bUuidObjectIFace
+        Public UuidEventsInterfaceOffset As UInteger ' bUuidEventsIFace
+        Public HasEvents As UInteger          ' fHasEvents
+        Public MiscStatus As UInteger         ' dwMiscStatus
+        Public ClassType As Byte              ' fClassType
+        Public ObjectType As Byte             ' fObjectType
+        Public ToolboxBitmap32 As UShort      ' wToolboxBitmap32
+        Public DefaultIcon As UShort          ' wDefaultIcon
+        Public IsDesigner As UShort           ' fIsDesigner
+        Public DesignerDataOffset As UInteger ' bDesignerData
     End Structure
 End Namespace

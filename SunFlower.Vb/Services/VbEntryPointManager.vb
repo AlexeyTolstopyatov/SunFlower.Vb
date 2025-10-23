@@ -10,7 +10,6 @@ Namespace Services
         Inherits MemoryManager
         Const Ia32PushOpcode As Byte = &H68
         Const Ia32CallOpcode As Byte = &H48
-        Private ReadOnly _reader As BinaryReader
         Private _runtimeHeader As Vb5Header
         Property CallingRuntimeRva As Long
         Public Property Vb5Header As [Option]

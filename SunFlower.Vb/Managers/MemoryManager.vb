@@ -41,6 +41,19 @@ Namespace Managers
                 Return $"![{ex.Message}]"
             End Try
         End Function
+        
+        Protected Function ReadStringAtOffset(offset As UInteger) As String
+            Dim bytes As New List(Of Byte)()
+            Dim b As Integer
+                
+            Do
+                b = _reader.ReadByte()
+                If b = 0 Then Exit Do
+                bytes.Add(CByte(b))
+            Loop While bytes.Count < 256
+
+            Return Encoding.Default.GetString(bytes.ToArray())
+        End Function
         Protected Function VaToFileOffset(va As UInteger) As Long
             Dim rva = If(va - imageBase > 0,
                          va - imageBase,
