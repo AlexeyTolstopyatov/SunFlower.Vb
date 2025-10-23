@@ -60,5 +60,15 @@ Namespace Managers
             
             Return -1
         End Function
+        Protected Function IsValidVa(va As UInteger) As Boolean
+            If va = 0 Then Return False
+            
+            Try
+                Dim offset = VaToFileOffset(va)
+                Return offset >= 0 AndAlso _reader.BaseStream.Length
+            Catch
+                Return False
+            End Try
+        End Function
     End Class
 End Namespace
