@@ -1,6 +1,7 @@
 Imports System.IO
 Imports NUnit.Framework
 Imports Microsoft.VisualBasic
+Imports SunFlower.Vb
 Imports SunFlower.Vb.Handlers
 Imports SunFlower.Vb.Headers
 Imports SunFlower.Vb.Services
@@ -47,6 +48,13 @@ Namespace SunFlower.Test
                 End Using
             End Using
             Assert.Pass()
+        End Sub
+        
+        <Test>
+        Public Sub EntryPointTest() 
+            Dim path = "D:\VB3TOOLS\VBDIS3.67e_Reloaded_Rev3_DoDi_s_VB3Decompiler\VBDIS3.67e\VBDIS3.exe"
+            Dim entry = New VisualBasicClassicSeed()
+            entry.Main(path)
         End Sub
     End Class
 End Namespace

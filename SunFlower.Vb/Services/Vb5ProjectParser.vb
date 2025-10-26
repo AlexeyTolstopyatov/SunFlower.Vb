@@ -8,8 +8,6 @@ Namespace Services
         Inherits MemoryManager
 
         Private ReadOnly _header As Vb5Header
-        Private ReadOnly _reader As BinaryReader
-
         ''' Some(size_t)
         ''' None(default)
         Public Property ProjectInfoOffset As [Option]

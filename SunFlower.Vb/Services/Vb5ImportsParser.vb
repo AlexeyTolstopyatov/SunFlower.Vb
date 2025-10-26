@@ -3,7 +3,7 @@ Imports System.Text
 Imports SunFlower.Vb.Headers
 
 Namespace Services
-    Public Class VbImportParser
+    Public Class Vb5ImportsParser
         Private ReadOnly _reader As BinaryReader
         Private ReadOnly _sections As List(Of PeSection)
         Private ReadOnly _imageBase As UInteger

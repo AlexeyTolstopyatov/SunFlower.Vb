@@ -23,3 +23,8 @@ Target toolchain is an experimental SunFlower build
 In the early commits you can see `3.1.0` contract attribute
 because SunFlower stays at the alpha-stage. New adapters and support
 schemes are incoming soon in 4.0 build.
+
+### Example of result
+
+File with full report for VB Semi Decompiler pinned [here](vbartefacts.md)
+

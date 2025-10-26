@@ -1,6 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:Boolean x:Key="/Default/AddReferences/RecentPaths/=D_003A_005CLocals_005CSunFlower_005Csrc_005CSunFlower_002EAbstractions_005Cbin_005CDebug_005Cnet8_002E0_005CSunFlower_002EAbstractions_002Edll/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6a5742a1_002D5103_002D4f39_002D9ffb_002D512d4565debf/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ModuleStructTest #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0ee0162e_002D69e2_002D4d6f_002D895c_002D3119dc53f33b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ModuleStructTest #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.EntryPointTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6a5742a1_002D5103_002D4f39_002D9ffb_002D512d4565debf/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ModuleStructTest #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
@@ -26,9 +32,16 @@
     &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleImportsTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e8f4c70d_002Df9aa_002D489b_002Dbc62_002D186ca027c024/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ModuleStructTest #5" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.EntryPointTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=fd913fb5_002D90d6_002D4e25_002Dad6b_002D3df66b9397d8/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ModuleStructTest #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.ModuleStructTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::361555DF-8642-403D-98CE-8A5236DE1BCE::net8.0::SunFlower.Test.SunFlower.Test.Tests.EntryPointTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
