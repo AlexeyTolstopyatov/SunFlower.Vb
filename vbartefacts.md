@@ -1,5 +1,5 @@
 # Sunflower Report
-**Generated at**: 2025-10-26 17:40:14
+**Generated at**: 2025-12-17 22:51:04
 
 
 Visual Basic 5.0+ Runtime walker
@@ -7,7 +7,7 @@ Visual Basic 5.0+ Runtime walker
 
 ## Visual Basic 5.0+ Header
 
-" 
+
 Microsoft Visual Basic virtual machine embed itself
 in compiled program/library. This is the first main file structure (starting point), it
 contains links to other structures and also some information related to VB project (like user
@@ -15,7 +15,7 @@ specified project name and description).
  - EntryPoint contains IA32 opcodes and VA address of this structure;
  - Generation code is located in `vb6.exe!WriteRubyExeData`;
 
-"
+
 | Name                           | Value                           |
 |--------------------------------|---------------------------------|
 | `VbMagic:sz`                   | `VB5!`                          |
@@ -44,14 +44,49 @@ specified project name and description).
 
 
 
+### COM | General
+
+
+Com registration info result contains `LPCSTR`s and resolved
+long pointers are:
+ - Project Name: `VBDecompiler`
+ - Project Description: `Visual Basic Decompiler`
+ - Help directory: ``
+
+Error message: 
+Processed successfully: True
+
+
+
+
+
+## COM | Registration Data
+
+Heading structure of next registry records chain. 
+If offset of COM registry info structure equals zero - next record is invalid and not shows
+| Name                           | Value                   |
+|--------------------------------|-------------------------|
+| `RegInfoOffset:4`              | 0x00000000              |
+| `ProjectNameOffset:4`          | 0x00000030              |
+| `HelpDirectoryOffset:4`        | 0x00000058              |
+| `ProjectDescriptionOffset:4`   | 0x00000040              |
+| `UuidProjectClsId:ps`          | `?????C%x1DE??H?+L??`   |
+| `TlbLcid:4`                    | 0x00000000              |
+| `Unknown:2`                    | 0x0000                  |
+| `TlbVerMajor:2`                | 0x0001                  |
+| `TlbVerMinor:2`                | 0x0000                  |
+
+
+
 ### Project Info
 
-"
+
 `tPROJINFO` or ProjectInfo structure has nested
 complex types. All pointers in structure are VA.
  - Fills by `vba6.dll!0x0FB11783`;
  - Application is N-Code compiled; 
-"
+
+
 | Name                       | Value             |
 |----------------------------|-------------------|
 | `Version:4`                | 0x000001F4        |
@@ -64,7 +99,7 @@ complex types. All pointers in structure are VA.
 | `VbaSEHPointer:4`          | 0x004057F6        |
 | `NativeCodePointer:4`      | 0x00502000        |
 | `PrimitivePath:ps`         | `%0%0%0%0%0%0`    |
-| `ProjectPath:bs`           | System.UInt16[]   |
+| `ProjectPath:?`            | System.UInt16[]   |
 | `ExternalTablePointer:4`   | 0x0041E20C        |
 | `ExternalTableCount:4`     | 0x0000001F        |
 
@@ -72,48 +107,49 @@ complex types. All pointers in structure are VA.
 
 ### Declared External API
 
-" 
+
 Despite the fact that VB5/6 files have no PE import 
 entries besides runtime library, any program
 can freely use WinAPI functions it wants. 
 This implemented using another internal structure.
+
 ```vb
-Declare Sub ExitProcess(code As Long) Lib Kernel32.dll
+Public Declare Function GetSystemMenu Lib "user32"
 ```
-"
-| ImportType   | LibraryName    | FunctionName                           | RawPointer   | _Index   |
-|--------------|--------------|--------------------------------------|------------|----------|
-| 7            | olly.dll       | Disasm                                 | 267732       | 0        |
-| 6            | [GUID]         | fcfb3d23-a0fa-1068-a738-08002b3371b5   | 4390364      | 1        |
-| 7            | advapi32.dll   | RegQueryValueExA                       | 187300       | 2        |
-| 7            | advapi32.dll   | RegOpenKeyA                            | 187248       | 3        |
-| 7            | advapi32.dll   | RegCloseKey                            | 187180       | 4        |
-| 7            | kernel32       | LoadLibraryA                           | 172992       | 5        |
-| 7            | advapi32       | RegCloseKey                            | 170736       | 6        |
-| 7            | advapi32       | RegQueryValueExA                       | 170668       | 7        |
-| 7            | advapi32       | RegOpenKeyExA                          | 170592       | 8        |
-| 7            | oleaut32       | SysFreeString                          | 168444       | 9        |
-| 7            | oleaut32       | LoadTypeLib                            | 168372       | 10       |
-| 7            | ole32          | StringFromGUID2                        | 168320       | 11       |
-| 7            | ole32.dll      | ProgIDFromCLSID                        | 168236       | 12       |
-| 7            | kernel32       | RtlFillMemory                          | 168152       | 13       |
-| 7            | user32         | CallWindowProcA                        | 168080       | 14       |
-| 7            | oleaut32       | VariantChangeType                      | 167996       | 15       |
-| 7            | kernel32       | IsBadReadPtr                           | 167904       | 16       |
-| 7            | ole32.dll      | CLSIDFromString                        | 167524       | 17       |
-| 7            | oleaut32.dll   | RegisterTypeLib                        | 167452       | 18       |
-| 7            | oleaut32.dll   | LoadTypeLib                            | 167380       | 19       |
-| 7            | shell32.dll    | ShellExecuteA                          | 164732       | 20       |
-| 7            | kernel32       | lstrlenA                               | 164644       | 21       |
-| 7            | kernel32       | lstrcpyA                               | 164576       | 22       |
-| 7            | kernel32       | RtlMoveMemory                          | 164524       | 23       |
-| 7            | Version.dll    | VerQueryValueA                         | 164436       | 24       |
-| 7            | Version.dll    | GetFileVersionInfoSizeA                | 164364       | 25       |
-| 7            | Version.dll    | GetFileVersionInfoA                    | 164284       | 26       |
-| 7            | comdlg32.dll   | GetFileTitleA                          | 163388       | 27       |
-| 7            | shell32        | SHGetPathFromIDList                    | 163296       | 28       |
-| 7            | shell32        | SHBrowseForFolder                      | 163208       | 29       |
-| 7            | ole32.dll      | CoTaskMemFree                          | 163120       | 30       |
+
+| ImportType   | LibraryName      | FunctionName                             | RawPointer   | #    |
+|--------------|----------------|----------------------------------------|------------|------|
+| 0x00000007   | `olly.dll`       | `Disasm`                                 | 0x000415D4   | 0    |
+| 0x00000006   | `[GUID]`         | `fcfb3d23-a0fa-1068-a738-08002b3371b5`   | 0x0042FDDC   | 1    |
+| 0x00000007   | `advapi32.dll`   | `RegQueryValueExA`                       | 0x0002DBA4   | 2    |
+| 0x00000007   | `advapi32.dll`   | `RegOpenKeyA`                            | 0x0002DB70   | 3    |
+| 0x00000007   | `advapi32.dll`   | `RegCloseKey`                            | 0x0002DB2C   | 4    |
+| 0x00000007   | `kernel32`       | `LoadLibraryA`                           | 0x0002A3C0   | 5    |
+| 0x00000007   | `advapi32`       | `RegCloseKey`                            | 0x00029AF0   | 6    |
+| 0x00000007   | `advapi32`       | `RegQueryValueExA`                       | 0x00029AAC   | 7    |
+| 0x00000007   | `advapi32`       | `RegOpenKeyExA`                          | 0x00029A60   | 8    |
+| 0x00000007   | `oleaut32`       | `SysFreeString`                          | 0x000291FC   | 9    |
+| 0x00000007   | `oleaut32`       | `LoadTypeLib`                            | 0x000291B4   | 10   |
+| 0x00000007   | `ole32`          | `StringFromGUID2`                        | 0x00029180   | 11   |
+| 0x00000007   | `ole32.dll`      | `ProgIDFromCLSID`                        | 0x0002912C   | 12   |
+| 0x00000007   | `kernel32`       | `RtlFillMemory`                          | 0x000290D8   | 13   |
+| 0x00000007   | `user32`         | `CallWindowProcA`                        | 0x00029090   | 14   |
+| 0x00000007   | `oleaut32`       | `VariantChangeType`                      | 0x0002903C   | 15   |
+| 0x00000007   | `kernel32`       | `IsBadReadPtr`                           | 0x00028FE0   | 16   |
+| 0x00000007   | `ole32.dll`      | `CLSIDFromString`                        | 0x00028E64   | 17   |
+| 0x00000007   | `oleaut32.dll`   | `RegisterTypeLib`                        | 0x00028E1C   | 18   |
+| 0x00000007   | `oleaut32.dll`   | `LoadTypeLib`                            | 0x00028DD4   | 19   |
+| 0x00000007   | `shell32.dll`    | `ShellExecuteA`                          | 0x0002837C   | 20   |
+| 0x00000007   | `kernel32`       | `lstrlenA`                               | 0x00028324   | 21   |
+| 0x00000007   | `kernel32`       | `lstrcpyA`                               | 0x000282E0   | 22   |
+| 0x00000007   | `kernel32`       | `RtlMoveMemory`                          | 0x000282AC   | 23   |
+| 0x00000007   | `Version.dll`    | `VerQueryValueA`                         | 0x00028254   | 24   |
+| 0x00000007   | `Version.dll`    | `GetFileVersionInfoSizeA`                | 0x0002820C   | 25   |
+| 0x00000007   | `Version.dll`    | `GetFileVersionInfoA`                    | 0x000281BC   | 26   |
+| 0x00000007   | `comdlg32.dll`   | `GetFileTitleA`                          | 0x00027E3C   | 27   |
+| 0x00000007   | `shell32`        | `SHGetPathFromIDList`                    | 0x00027DE0   | 28   |
+| 0x00000007   | `shell32`        | `SHBrowseForFolder`                      | 0x00027D88   | 29   |
+| 0x00000007   | `ole32.dll`      | `CoTaskMemFree`                          | 0x00027D30   | 30   |
 
 
 
@@ -182,9 +218,9 @@ Second structure following next of current object
 ### frmMain | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 22           | 328      | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0016       | 0x0148   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -216,12 +252,12 @@ Types iterated and placed here are public-declared
 ### frmMain | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
-| 3        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x00000024          | 0x0025   | 0x0000   | 0x0026       | 0x00270000   | 0x0000   | 0x74E8   | 0x74F80042   | 0x0042   | 0   |
+| 0x00010040          | 0x0040   | 0x0000   | 0x7508       | 0x00190042   | 0x0003   | 0x0000   | 0x00000000   | 0x0000   | 1   |
+| 0x00425270          | 0xA91C   | 0x0379   | 0x7518       | 0x00190042   | 0x0003   | 0x0040   | 0x00440001   | 0x0000   | 2   |
+| 0x00427508          | 0x0018   | 0x0003   | 0x0000       | 0x00000000   | 0x0000   | 0x528C   | 0xA91C0042   | 0x0379   | 3   |
 
 
 
@@ -288,18 +324,18 @@ Second structure following next of current object
 ### modGlobals | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 934          | 1452     | 0        | 58       | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x03A6       | 0x05AC   | 0x0000   | 0x003A   | 0   |
 
 
 
 ### modGlobals | Public variables
 
 
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Static     | 40           | 44       | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Static`   | 0x0028       | 0x002C   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -312,15 +348,15 @@ Types iterated and placed here are public-declared
 ### modGlobals | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
-| 3        |
-| 4        |
-| 5        |
-| 6        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x0AFF5C04          | 0x0003   | 0x0014   | 0x0836       | 0x3CFF5C00   | 0x1CFF   | 0xFCFF   | 0x03431EFE   | 0x0200   | 0   |
+| 0x6C3A1A00          | 0x4256   | 0x2135   | 0x2636       | 0x0000002A   | 0x0000   | 0x0000   | 0x00000000   | 0x0000   | 1   |
+| 0x0000007E          | 0x0000   | 0x0000   | 0x0000       | 0x00000000   | 0x000A   | 0x0409   | 0x00000000   | 0x0000   | 2   |
+| 0x00000000          | 0xE9A0   | 0x0041   | 0xF1FF       | 0xFF0001B8   | 0xFFFF   | 0x0008   | 0x00010000   | 0x0000   | 3   |
+| 0x00090009          | 0x00E9   | 0x0000   | 0xEBDC       | 0x37900041   | 0x0042   | 0x5D18   | 0x00780040   | 0x0000   | 4   |
+| 0x00000089          | 0x009C   | 0x0000   | 0x009D       | 0x00000000   | 0x0000   | 0x0000   | 0x00000000   | 0x0000   | 5   |
+| 0x00000000          | 0x6553   | 0x696D   | 0x4256       | 0x6F636544   | 0x706D   | 0x6C69   | 0x53007265   | 0x6D65   | 6   |
 
 
 
@@ -387,9 +423,9 @@ Second structure following next of current object
 ### modOutput | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 168          | 40       | 0        | 9        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x00A8       | 0x0028   | 0x0000   | 0x0009   | 0   |
 
 
 
@@ -474,9 +510,9 @@ Second structure following next of current object
 ### modPeSkeleton | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 370          | 1400     | 1        | 14       | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0172       | 0x0578   | 0x0001   | 0x000E   | 0   |
 
 
 
@@ -561,9 +597,9 @@ Second structure following next of current object
 ### modNative | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 76           | 16       | 0        | 2        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x004C       | 0x0010   | 0x0000   | 0x0002   | 0   |
 
 
 
@@ -648,9 +684,9 @@ Second structure following next of current object
 ### modControls | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 84           | 68       | 0        | 4        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0054       | 0x0044   | 0x0000   | 0x0004   | 0   |
 
 
 
@@ -735,9 +771,9 @@ Second structure following next of current object
 ### frmOptions | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 160      | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x00A0   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -822,9 +858,9 @@ Second structure following next of current object
 ### modCOM | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 16           | 8        | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0010       | 0x0008   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -909,9 +945,9 @@ Second structure following next of current object
 ### clsMemoryMap | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 44           | 72       | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x002C       | 0x0048   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -1000,9 +1036,9 @@ Second structure following next of current object
 ### clsFile | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 20           | 80       | 0        | 2        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0014       | 0x0050   | 0x0000   | 0x0002   | 0   |
 
 
 
@@ -1104,9 +1140,9 @@ Second structure following next of current object
 ### modFrx | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 44           | 8        | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x002C       | 0x0008   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -1191,9 +1227,9 @@ Second structure following next of current object
 ### frmPcode | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 112      | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x0070   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1278,9 +1314,9 @@ Second structure following next of current object
 ### modAntiDecompiler | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 22           | 20       | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0016       | 0x0014   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -1365,9 +1401,9 @@ Second structure following next of current object
 ### modPCodeToVB | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 8        | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x0008   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1452,9 +1488,9 @@ Second structure following next of current object
 ### modPCode | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 248          | 128      | 2        | 11       | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x00F8       | 0x0080   | 0x0002   | 0x000B   | 0   |
 
 
 
@@ -1473,9 +1509,9 @@ Types iterated and placed here are public-declared
 ### modPCode | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x00300036          | 0x0001   | 0x0017   | 0x6560       | 0x00000042   | 0x0000   | 0xFFFF   | 0xFFFFFFFF   | 0xFFFF   | 0   |
 
 
 
@@ -1542,9 +1578,9 @@ Second structure following next of current object
 ### modTypeLB | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 8        | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x0008   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1563,12 +1599,12 @@ Types iterated and placed here are public-declared
 ### modTypeLB | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
-| 3        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x00000000          | 0x346A   | 0x781D   | 0x0010       | 0x6B736544   | 0x6F74   | 0x0001   | 0x65600001   | 0x0042   | 0   |
+| 0x00000000          | 0xFFFF   | 0xFFFF   | 0xFFFF       | 0x0000FFFF   | 0x0000   | 0x65E4   | 0x201C0042   | 0x0050   | 1   |
+| 0x00000007          | 0xE144   | 0x0041   | 0x0002       | 0x00000020   | 0x0000   | 0xE7A4   | 0xE13C0379   | 0x0041   | 2   |
+| 0x0042813C          | 0x8174   | 0x0042   | 0x5C04       | 0x00030AFF   | 0x0014   | 0x0836   | 0x3CFF5C00   | 0x1CFF   | 3   |
 
 
 
@@ -1635,9 +1671,9 @@ Second structure following next of current object
 ### modLang | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 54           | 80       | 0        | 3        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0036       | 0x0050   | 0x0000   | 0x0003   | 0   |
 
 
 
@@ -1722,9 +1758,9 @@ Second structure following next of current object
 ### frmAbout | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 108      | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x006C   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1747,11 +1783,11 @@ Types iterated and placed here are public-declared
 ### frmAbout | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x746C0013          | 0xE4FF   | 0x0EFF   | 0x0052       | 0x97F0000C   | 0x0042   | 0x9460   | 0x00400042   | 0x0012   | 0   |
+| 0x00000034          | 0x7ADC   | 0x0042   | 0x000A       | 0x00000003   | 0x0000   | 0x0000   | 0xFA100000   | 0x0041   | 1   |
+| 0x0379A9EC          | 0x9120   | 0x0042   | 0x000A       | 0x00400003   | 0x0011   | 0x0038   | 0x75740000   | 0x0042   | 2   |
 
 
 
@@ -1818,9 +1854,9 @@ Second structure following next of current object
 ### frmAddressToFileOffset | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 108      | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x006C   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1905,9 +1941,9 @@ Second structure following next of current object
 ### frmCheckUpdate | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 92       | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x005C   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -1992,9 +2028,9 @@ Second structure following next of current object
 ### frmAdvDecompile | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 108      | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x006C   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -2079,9 +2115,9 @@ Second structure following next of current object
 ### modVB4 | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 32           | 148      | 0        | 2        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0020       | 0x0094   | 0x0000   | 0x0002   | 0   |
 
 
 
@@ -2141,6 +2177,7 @@ Heading structure represents object names `PublicObjectDescriptor`
 ## frmNativeDecompile | Information
 
 Second structure following next of current object
+
 | Name                       | Value        |
 |----------------------------|--------------|
 | `RefCount:2`               | 0x0001       |
@@ -2166,9 +2203,10 @@ Second structure following next of current object
 ### frmNativeDecompile | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 16           | 116      | 0        | 1        | 0        |
+
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0010       | 0x0074   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -2193,6 +2231,7 @@ Types iterated and placed here are private and unnamed. Pointers to names of eac
 # modRegistry | Type Declaration
 
 Type info is custom structure what describes current object
+
 | Name                     | Value        |
 |--------------------------|--------------|
 | `Flags:4`                | 0x00018001   |
@@ -2208,6 +2247,7 @@ Type info is custom structure what describes current object
 ## modRegistry | Descriptor
 
 Heading structure represents object names `PublicObjectDescriptor`
+
 | Name                      | Value        |
 |---------------------------|--------------|
 | `ObjectInfoPointer:4`     | 0x0041E078   |
@@ -2228,6 +2268,7 @@ Heading structure represents object names `PublicObjectDescriptor`
 ## modRegistry | Information
 
 Second structure following next of current object
+
 | Name                       | Value        |
 |----------------------------|--------------|
 | `RefCount:2`               | 0x0001       |
@@ -2253,9 +2294,10 @@ Second structure following next of current object
 ### modRegistry | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 8        | 0        | 0        | 0        |
+
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x0008   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -2274,11 +2316,12 @@ Types iterated and placed here are public-declared
 ### modRegistry | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
+
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x00000044          | 0x0104   | 0x0000   | 0x3FFC       | 0x00010338   | 0x000F   | 0x6560   | 0x00000042   | 0x0000   | 0   |
+| 0xFFFFFFFF          | 0xFFFF   | 0xFFFF   | 0x0000       | 0x68840000   | 0x0042   | 0x26F8   | 0x00040050   | 0x0000   | 1   |
+| 0x0041E0F4          | 0x0000   | 0x0000   | 0x0000       | 0x00000000   | 0x0000   | 0xE0F4   | 0x00000041   | 0x0000   | 2   |
 
 
 
@@ -2345,9 +2388,9 @@ Second structure following next of current object
 ### modVBNET | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 616          | 492      | 1        | 48       | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0268       | 0x01EC   | 0x0001   | 0x0030   | 0   |
 
 
 
@@ -2366,9 +2409,9 @@ Types iterated and placed here are public-declared
 ### modVBNET | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x20202020          | 0x0001   | 0x0005   | 0x6560       | 0x00000042   | 0x0000   | 0xFFFF   | 0xFFFFFFFF   | 0xFFFF   | 0   |
 
 
 
@@ -2435,9 +2478,9 @@ Second structure following next of current object
 ### CInstruction | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 24           | 80       | 0        | 3        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0018       | 0x0050   | 0x0000   | 0x0003   | 0   |
 
 
 
@@ -2522,9 +2565,9 @@ Second structure following next of current object
 ### CDisassembler | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 12           | 64       | 0        | 0        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x000C       | 0x0040   | 0x0000   | 0x0000   | 0   |
 
 
 
@@ -2548,10 +2591,10 @@ Types iterated and placed here are public-declared
 ### CDisassembler | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0x00000000          | 0x0000   | 0x0000   | 0x8EE8       | 0x0FD40042   | 0x0044   | 0x0040   | 0x00340002   | 0x0000   | 0   |
+| 0x00428F08          | 0xFFFF   | 0xFFFF   | 0x0000       | 0x00000000   | 0x0000   | 0xE3C0   | 0x86EC0041   | 0x0393   | 1   |
 
 
 
@@ -2618,9 +2661,9 @@ Second structure following next of current object
 ### modNeFormat | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 54           | 12       | 0        | 2        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0036       | 0x000C   | 0x0000   | 0x0002   | 0   |
 
 
 
@@ -2705,9 +2748,9 @@ Second structure following next of current object
 ### clsConsole | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 16           | 68       | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0010       | 0x0044   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -2798,9 +2841,9 @@ Second structure following next of current object
 ### frmStartUp | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 22           | 132      | 0        | 1        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x0016       | 0x0084   | 0x0000   | 0x0001   | 0   |
 
 
 
@@ -2885,9 +2928,9 @@ Second structure following next of current object
 ### clsTypeLibInfo | Public variables
 
 Types iterated and placed here are public-declared
-| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | _Index   |
-|------------|------------|--------|--------|--------|----------|
-| Public     | 26           | 412      | 0        | 2        | 0        |
+| TypeName   | TotalBytes   | Flags1   | Count1   | Count2   | #   |
+|------------|------------|--------|--------|--------|-----|
+| `Public`   | 0x001A       | 0x019C   | 0x0000   | 0x0002   | 0   |
 
 
 
@@ -2944,18 +2987,18 @@ Types iterated and placed here are public-declared
 ### clsTypeLibInfo | Private Methods data
 
 Types iterated and placed here are private and unnamed. Pointers to names of each method are located unreachable memory space
-| _Index   |
-|------------|
-| 0        |
-| 1        |
-| 2        |
-| 3        |
-| 4        |
-| 5        |
-| 6        |
-| 7        |
-| 8        |
-| 9        |
+| ObjectInfoPointer   | Flag1    | Flag2    | CodeLength   | Flag3        | Flag4    | Null     | Flag5        | Flag6    | #   |
+|---------------------|--------|--------|------------|------------|--------|--------|------------|--------|-----|
+| 0xFFFFFF64          | 0x0008   | 0xFFFF   | 0x0000       | 0x00780000   | 0x0000   | 0x8460   | 0xFFFF0774   | 0xFFFF   | 0   |
+| 0xFFFFFF60          | 0x0008   | 0xFFFF   | 0x0000       | 0x005C0000   | 0x0073   | 0x8EE8   | 0x8EF80042   | 0x0042   | 1   |
+| 0x00020040          | 0x0190   | 0x0000   | 0x8F08       | 0xFFFF0042   | 0xFFFF   | 0x0000   | 0x00000000   | 0x0000   | 2   |
+| 0x0041F030          | 0x86EC   | 0x0393   | 0x8F18       | 0xFFFF0042   | 0xFFFF   | 0xF058   | 0xF0650041   | 0x0041   | 3   |
+| 0x0041F072          | 0xF07F   | 0x0041   | 0xF08C       | 0xF0990041   | 0x0041   | 0xF0A6   | 0xF0B30041   | 0x0041   | 4   |
+| 0x0041F0C0          | 0xF0CD   | 0x0041   | 0xF0DA       | 0xF0E70041   | 0x0041   | 0xF0F4   | 0xF1010041   | 0x0041   | 5   |
+| 0x0041F10E          | 0xF11B   | 0x0041   | 0xF128       | 0xF1350041   | 0x0041   | 0xF142   | 0xF14F0041   | 0x0041   | 6   |
+| 0x0041F15C          | 0xF169   | 0x0041   | 0xF176       | 0xF1830041   | 0x0041   | 0xF190   | 0xF19D0041   | 0x0041   | 7   |
+| 0x0041F1AA          | 0xF1B7   | 0x0041   | 0xF1C4       | 0xF1D10041   | 0x0041   | 0xF1DE   | 0xF1EB0041   | 0x0041   | 8   |
+| 0x0041F26D          | 0xF27A   | 0x0041   | 0xF287       | 0xF2940041   | 0x0041   | 0xF1F8   | 0xF2050041   | 0x0041   | 9   |
 
 
 
